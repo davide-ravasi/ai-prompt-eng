@@ -23,17 +23,21 @@ def main():
     cleaned_content = clean_content(content)
 
     # Generate a summary of the content
-    summary = generate_summary(cleaned_content)
+    summary_content = generate_summary(cleaned_content)
 
     # Format the content in a markdown format
-    markdown_content = format_text_to_markdown(summary)
+    markdown_content = format_text_to_markdown(summary_content)
 
     # Generate a document with the content
-    document = generate_document(markdown_content)
+    document_path = generate_document(markdown_content)
 
-    print("This is the created document:")
-    print(document)
+    print("This is the path of the created document:")
+    print(document_path)
 
 
 if __name__ == "__main__":
     main()
+
+# IDEAS
+
+# - add a function that generate a filename from the article title
