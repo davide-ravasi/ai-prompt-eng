@@ -2,6 +2,8 @@
 # This file shows the basic imports and setup needed for the LLM color matcher
 
 import os
+import json
+import google.generativeai as genai
 import pandas as pd
 from dotenv import load_dotenv
 
@@ -65,6 +67,41 @@ def test_basic_functionality():
     except Exception as e:
         print(f"❌ Error with Excel operations: {e}")
 
+def setup_llm(api_key: str = None):
+    """
+    Setup the LLM with Google Gemini API.
+    """
+    print("\n=== Setting up Google Gemini LLM ===")
+
+    if api_key:
+       print(f"✅ Using provided API key")
+    else:
+       api_key = os.getenv("GOOGLE_API_KEY")
+       if api_key:
+           print("Using API key from environments variables")
+       else:
+           print("❌ No API key found in environment")
+           print("   You can set it with: export GOOGLE_API_KEY='your_key_here'")
+           return False
+
+    # genai.configure(api_key=api_key)
+    try:
+        genai.configure(api_key=api_key)
+        print("✅ Google Gemini API key configured")
+        return True
+    except Exception as e:
+        print(f"❌ Error configuring Google Gemini API key: {e}")
+        return False
+
+ 
+
+    #try catch to configure the api key
+    # search in the other tutorial
+
+def test_basic_llm_comunication():
+    return True
+    
+
 if __name__ == "__main__":
     print("Step 1: Basic Setup and Dependencies")
     print("=" * 50)
@@ -74,8 +111,10 @@ if __name__ == "__main__":
     
     if deps_ok:
         test_basic_functionality()
+        setup_llm()
         print("\n✅ Step 1 completed successfully!")
         print("Ready to move to Step 2: LLM Setup")
+
     else:
         print("\n❌ Please install missing dependencies before continuing")
         print("Run: uv sync") 
