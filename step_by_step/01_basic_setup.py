@@ -99,8 +99,46 @@ def setup_llm(api_key: str = None):
     # search in the other tutorial
 
 def test_basic_llm_comunication():
+    print("\n=== Testing Basic LLM Communication ===")
+
+    try:
+         model = genai.GenerativeModel("gemini-2.5-flash-lite")
+         print(f"✅ Using model: {model.model_name}")
+         prompt = "Hello! Can you respond with just 'Hello from Gemini'?"
+         print(f"✅ Sending Prompt: {prompt}")
+         response = model.generate_content(prompt)
+         print(f"✅ LLM response: {response.text}")
+    except Exception as e:
+        print(f"❌ Error testing LLM communication: {e}")
+        return False
+
     return True
+
+def create_llm_prompt():
+    print("\n=== Creating LLM Prompt ===")
+    print(f"✅ Add some colors to decode----")
+    user_input = input("Enter the colors to decode: ")
+    print(f"✅ You entered: {user_input}")
+    prompt = (
+        "You are an expert color decoder. You are given a list of colors and you need to decode them. "
+        "The colors are in hex format. "
+        "The color are one or more words separated by a space. "
+        "The response need to be in the following format: "
+        "Color: <color_name> "
+        "Hex: <hex_code> "
+        f"Colors to decode: {user_input}"
+    )
+
+    try:
+        model = genai.GenerativeModel("gemini-2.5-flash-lite")
+        print(f"✅ Using model: {model.model_name}")
+        response = model.generate_content(prompt)
+        print(f"✅ Response: {response.text}")
+    except Exception as e:
+        print(f"❌ Error creating LLM prompt: {e}")
+        return False
     
+    return True
 
 if __name__ == "__main__":
     print("Step 1: Basic Setup and Dependencies")
@@ -112,6 +150,9 @@ if __name__ == "__main__":
     if deps_ok:
         test_basic_functionality()
         setup_llm()
+        test_basic_llm_comunication()
+
+        create_llm_prompt()
         print("\n✅ Step 1 completed successfully!")
         print("Ready to move to Step 2: LLM Setup")
 
