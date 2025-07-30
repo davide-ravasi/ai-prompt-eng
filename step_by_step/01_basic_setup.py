@@ -123,9 +123,18 @@ def create_llm_prompt():
         "You are an expert color decoder. You are given a list of colors and you need to decode them. "
         "The colors are in hex format. "
         "The color are one or more words separated by a space. "
-        "The response need to be in the following format: "
-        "Color: <color_name> "
-        "Hex: <hex_code> "
+        "The response need to be in a json format with the following format: "
+        "{"
+        "  \"colors\": ["
+        "    {"
+        "      \"color_name\": \"<color_name>\","
+        "      \"hex_code\": \"<hex_code>\""
+        "    }"
+        "  ]"
+        "}"
+        "Respond with ONLY valid JSON, no code block markers, no explanations."
+        "check if there are more than one color in the response, if there are, return a list of colors."
+        "check for duplicates, if there are, remove them."
         f"Colors to decode: {user_input}"
     )
 
@@ -138,10 +147,23 @@ def create_llm_prompt():
         print(f"❌ Error creating LLM prompt: {e}")
         return False
     
-    return True
+    return response.text
+
+def parse_json_response(json_response: str):
+    print("\n=== Texting LLM Prompt ===")
+    print(f"✅ JSON Response: {json_response}")
+    try:
+        json_response = json.loads(json_response)
+        print(f"✅ JSON Response: {json_response}")
+        print(f"✅ JSON Response: {json_response['colors']}")
+    except Exception as e:
+        print(f"❌ Error testing LLM prompt JSON: {e}")
+        return False
+
+
 
 if __name__ == "__main__":
-    print("Step 1: Basic Setup and Dependencies")
+    print("Step 2: LLM Setup")
     print("=" * 50)
     
     # Check dependencies
@@ -152,7 +174,8 @@ if __name__ == "__main__":
         setup_llm()
         test_basic_llm_comunication()
 
-        create_llm_prompt()
+        json_response = create_llm_prompt()
+        parse_json_response(json_response)
         print("\n✅ Step 1 completed successfully!")
         print("Ready to move to Step 2: LLM Setup")
 
