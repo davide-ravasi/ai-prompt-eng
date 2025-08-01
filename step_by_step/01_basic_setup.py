@@ -160,6 +160,19 @@ def parse_json_response(json_response: str):
         print(f"❌ Error testing LLM prompt JSON: {e}")
         return False
 
+def read_excel_file(excel_file: str):
+    print("\n=== Reading Excel Files ===")
+    print(f"✅ Reading Excel Files")
+
+    #excel_file = "docs/database_colors/colors.xlsx"
+    try: 
+        df = pd.read_excel(excel_file)
+        print(f"✅ DataFrame: {df}")
+        return df
+    except Exception as e:
+        print(f"❌ Error reading Excel file: {e}")
+        return False
+
 
 
 if __name__ == "__main__":
@@ -172,12 +185,16 @@ if __name__ == "__main__":
     if deps_ok:
         test_basic_functionality()
         setup_llm()
-        test_basic_llm_comunication()
+        #test_basic_llm_comunication()
 
-        json_response = create_llm_prompt()
-        parse_json_response(json_response)
-        print("\n✅ Step 1 completed successfully!")
-        print("Ready to move to Step 2: LLM Setup")
+        #json_response = create_llm_prompt()
+        #parse_json_response(json_response)
+        print("give me the excel file")
+        excel_file = input("Enter the excel file: ")
+        print(f"✅ You entered: {excel_file}")
+        read_excel_file(excel_file)
+        print("\n✅ Step 2 completed successfully!")
+        print("Ready to move to Step 3: Reading Excel Files")
 
     else:
         print("\n❌ Please install missing dependencies before continuing")

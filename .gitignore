@@ -11,3 +11,16 @@ wheels/
 
 # Environment variables
 .env
+
+# Docs 
+docs/
+
+# Excel files
+*.xlsx
+*.xls
+
+# Colors
+colors/
+
+# todo
+step_by_step/TODO.md
