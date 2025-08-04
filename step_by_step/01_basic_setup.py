@@ -164,10 +164,19 @@ def read_excel_file(excel_file: str):
     print("\n=== Reading Excel Files ===")
     print(f"✅ Reading Excel Files")
 
+    # Check if the file exists
+    if not os.path.exists(excel_file):
+        print(f"❌ The file {excel_file} does not exist.")
+        return False
+
     #excel_file = "docs/database_colors/colors.xlsx"
     try: 
         df = pd.read_excel(excel_file)
-        print(f"✅ DataFrame: {df}")
+        print(f"✅ Successfully loaded Excel file")
+        print(f"✅ Shape: {df.shape[0]} rows, {df.shape[1]} columns")
+        print(f"✅ Columns: {list(df.columns)}")
+        print(f"✅ First 3 rows:")
+        print(df.head(3))
         return df
     except Exception as e:
         print(f"❌ Error reading Excel file: {e}")
