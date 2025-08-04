@@ -170,6 +170,7 @@ def read_excel_file(excel_file: str):
         return False
 
     #excel_file = "docs/database_colors/colors.xlsx"
+    # reference colors = "docs/database_colors/reference_colors.xlsx"
     try: 
         df = pd.read_excel(excel_file)
         print(f"✅ Successfully loaded Excel file")
@@ -185,7 +186,7 @@ def read_excel_file(excel_file: str):
 
 
 if __name__ == "__main__":
-    print("Step 2: LLM Setup")
+    print("Step 3: Reading Excel Files")
     print("=" * 50)
     
     # Check dependencies
