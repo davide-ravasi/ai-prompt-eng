@@ -183,6 +183,51 @@ def read_excel_file(excel_file: str):
         print(f"❌ Error reading Excel file: {e}")
         return False
 
+def validate_excel_structure(df: pd.DataFrame, columns: list[str]):
+    """
+    Validate that the Excel file has the expected columns.
+    
+    Args:
+        df: DataFrame to validate
+        columns: List of column names that must exist
+    
+    Returns:
+        bool: True if all columns exist, False otherwise
+    """
+    print(f"\n=== Validating Excel Structure ===")
+    
+    if df is None:
+        print("❌ DataFrame is None")
+        return False
+    
+    if not isinstance(columns, list):
+        print("❌ Columns parameter must be a list")
+        return False
+    
+    if len(columns) == 0:
+        print("❌ No columns specified for validation")
+        return False
+    
+    print(f"🔍 Checking for required columns: {columns}")
+    print(f"📋 Available columns: {list(df.columns)}")
+    
+    missing_columns = []
+    found_columns = []
+    
+    for column in columns:
+        if column in df.columns:
+            found_columns.append(column)
+            print(f"✅ Found column: {column}")
+        else:
+            missing_columns.append(column)
+            print(f"❌ Missing column: {column}")
+    
+    if missing_columns:
+        print(f"❌ Validation failed: {len(missing_columns)} missing columns")
+        return False
+    else:
+        print(f"✅ Validation successful: All {len(found_columns)} required columns found")
+        return True
 
 
 if __name__ == "__main__":
@@ -199,10 +244,17 @@ if __name__ == "__main__":
 
         #json_response = create_llm_prompt()
         #parse_json_response(json_response)
-        print("give me the excel file")
-        excel_file = input("Enter the excel file: ")
-        print(f"✅ You entered: {excel_file}")
-        read_excel_file(excel_file)
+        #print("give me the excel file")
+
+        excel_source_file = input("Enter the excel source colors file: ")
+        print(f"✅ You entered: {excel_source_file}")
+        df = read_excel_file(excel_source_file)
+        validate_excel_structure(df, ["COLOR NAME", "celHexa1", "celHexa2"])
+
+        excel_destination_file = input("Enter the excel destination colors file: ")
+        print(f"✅ You entered: {excel_destination_file}")
+        df = read_excel_file(excel_destination_file)
+        validate_excel_structure(df, ["COLOR NAME", "HEXA 1", "HEXA 2"])
         print("\n✅ Step 2 completed successfully!")
         print("Ready to move to Step 3: Reading Excel Files")
 
