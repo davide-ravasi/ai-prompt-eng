@@ -229,6 +229,82 @@ def validate_excel_structure(df: pd.DataFrame, columns: list[str]):
         print(f"✅ Validation successful: All {len(found_columns)} required columns found")
         return True
 
+def create_color_matching_prompt(reference_colors: pd.DataFrame, target_colors: pd.DataFrame):
+    print("\n=== Creating Color Matching Prompt ===")
+    print(f"✅ Creating Color Matching Prompt")
+
+    # Better: Structured with clear sections
+    prompt = f"""
+        SYSTEM: You are an expert color matcher with deep knowledge of color names and their hexadecimal codes.
+
+        TASK: Match the given color names to their corresponding hex codes from the reference database.
+
+        REFERENCE COLORS:
+        {format_reference_colors(reference_colors)}
+
+        COLORS TO MATCH:
+        {format_target_colors(target_colors)}
+
+        INSTRUCTIONS:
+        - If color name has '/' separator, match first word to COL 1, second to COL 2. Example: "Red / Blue" -> "Red" to COL 1, "Blue" to COL 2
+        - If color name is composed by two or more words separated by a space, consider as unique color name and match to COL 1. Example: "Red Blue" -> "Red Blue" to COL 1
+        - If single word, match to COL 1
+        - If single word, match to COL 2
+        - Remove duplicates
+        - Return ONLY valid JSON
+
+        OUTPUT FORMAT:
+        {{
+        "colors": [
+            {{
+            "color_name_1": "<color_name_1>",
+            "color_name_2": "<color_name_2>",
+            "hex_code_1": "<hex_code_1>",
+            "hex_code_2": "<hex_code_2>",
+            "confidence_1": 0.95,
+            "confidence_2": 0.95,
+            "exact_match_1": true,
+            "exact_match_2": true,
+            "reasoning_1": "Brief explanation",
+            "reasoning_2": "Brief explanation"
+            }}
+        ]
+        }}
+    """
+
+    try:
+        model = genai.GenerativeModel("gemini-2.5-flash-lite")
+        print(f"✅ Using model: {model.model_name}")
+        response = model.generate_content(prompt)
+        print(f"✅ Response: {response.text}")
+    except Exception as e:
+        print(f"❌ Error creating LLM prompt: {e}")
+        return False
+    
+    return response.text
+
+# Better: Formatted for readability
+def format_reference_colors(df):
+    colors = []
+    for _, row in df.iterrows():
+        colors.append(f"- {row['COLOR NAME']}: {row['celHexa1']}")
+        if pd.notna(row['celHexa2']):
+            colors.append(f"- {row['COLOR NAME']}: {row['celHexa2']}")
+    return "\n".join(colors)
+
+# Better: Formatted for readability
+def format_target_colors(df):
+    colors = []
+    for _, row in df.iterrows():
+        colors.append(f"- {row['COLOR NAME']}: {row['HEXA 1']}")
+        if pd.notna(row['HEXA 2']):
+            colors.append(f"- {row['COLOR NAME']}: {row['HEXA 2']}")
+    return "\n".join(colors)
+
+
+    #excel_file = "docs/database_colors/colors.xlsx"
+    # reference colors = "docs/database_colors/reference_colors.xlsx"
+
 
 if __name__ == "__main__":
     print("Step 3: Reading Excel Files")
@@ -248,15 +324,19 @@ if __name__ == "__main__":
 
         excel_source_file = input("Enter the excel source colors file: ")
         print(f"✅ You entered: {excel_source_file}")
-        df = read_excel_file(excel_source_file)
-        validate_excel_structure(df, ["COLOR NAME", "celHexa1", "celHexa2"])
+        dfsource = read_excel_file(excel_source_file)
+        validate_excel_structure(dfsource, ["COLOR NAME", "celHexa1", "celHexa2"])
 
         excel_destination_file = input("Enter the excel destination colors file: ")
         print(f"✅ You entered: {excel_destination_file}")
-        df = read_excel_file(excel_destination_file)
-        validate_excel_structure(df, ["COLOR NAME", "HEXA 1", "HEXA 2"])
-        print("\n✅ Step 2 completed successfully!")
-        print("Ready to move to Step 3: Reading Excel Files")
+        dfdestination = read_excel_file(excel_destination_file)
+        validate_excel_structure(dfdestination, ["COLOR NAME", "HEXA 1", "HEXA 2"])
+
+        prompt = create_color_matching_prompt(dfsource, dfdestination)
+        print(f"✅ Prompt: {prompt}")
+
+        print("\n✅ Step 3 completed successfully!")
+        print("Ready to move to Step 4: Matching Colors")
 
     else:
         print("\n❌ Please install missing dependencies before continuing")
