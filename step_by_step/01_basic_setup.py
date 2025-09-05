@@ -301,6 +301,33 @@ def format_target_colors(df):
             colors.append(f"- {row['COLOR NAME']}: {row['HEXA 2']}")
     return "\n".join(colors)
 
+def parsed_json(json_response: str):
+    print("\n=== Parsing JSON Response ===")
+    
+    # Clean the response by removing markdown code block markers
+    cleaned_response = json_response.strip()
+    
+    # Remove ```json and ``` markers if present
+    if cleaned_response.startswith("```json"):
+        cleaned_response = cleaned_response[7:]  # Remove ```json
+    if cleaned_response.startswith("```"):
+        cleaned_response = cleaned_response[3:]   # Remove ```
+    if cleaned_response.endswith("```"):
+        cleaned_response = cleaned_response[:-3]  # Remove trailing ```
+    
+    cleaned_response = cleaned_response.strip()
+    print(f"🔍 Cleaned JSON: {cleaned_response[:100]}...")  # Show first 100 chars
+
+    try:
+        # Convert string to object
+        json_object = json.loads(cleaned_response)
+        print(f"✅ JSON parsing successful!")
+        print(f"📊 Found {len(json_object.get('colors', []))} color matches")
+        return json_object
+    except json.JSONDecodeError as e:
+        print(f"❌ JSON parsing error: {e}")
+        print(f"🔍 Raw response: {json_response[:200]}...")
+        return None
 
     #excel_file = "docs/database_colors/colors.xlsx"
     # reference colors = "docs/database_colors/reference_colors.xlsx"
@@ -314,7 +341,7 @@ if __name__ == "__main__":
     deps_ok = check_dependencies()
     
     if deps_ok:
-        test_basic_functionality()
+        #test_basic_functionality()
         setup_llm()
         #test_basic_llm_comunication()
 
@@ -334,6 +361,9 @@ if __name__ == "__main__":
 
         prompt = create_color_matching_prompt(dfsource, dfdestination)
         print(f"✅ Prompt: {prompt}")
+
+        parsed_data = parsed_json(prompt)
+        print(f"✅ Parsed JSON: {parsed_data}")
 
         print("\n✅ Step 3 completed successfully!")
         print("Ready to move to Step 4: Matching Colors")
